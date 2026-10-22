@@ -12,7 +12,7 @@ import {
 import { CartItem } from './utils/procurement';
 import { testConnection } from './firebase/config';
 import { SignInScreen } from './components/SignInScreen';
-import { SmartAssistant } from './components/SmartAssistant';
+
 import { BuyerCatalog } from './components/BuyerCatalog';
 import { CartModal } from './components/CartModal';
 import { OrdersView } from './components/OrdersView';
@@ -287,17 +287,7 @@ export default function App() {
               >
                 Catalog
               </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('assistant')}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  activeTab === 'assistant'
-                    ? 'bg-white text-sky-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Smart Assistant
-              </button>
+
               <button
                 type="button"
                 onClick={() => setActiveTab('orders')}
@@ -390,69 +380,11 @@ export default function App() {
                   onSelectSupplier={setSelectedSupplierId}
                   cartItems={cartItems}
                   onAddToCart={handleAddToCart}
-                  onOpenMap={() => setActiveTab('map')}
                 />
               </div>
             )}
 
-            {/* Tab: Map */}
-            {activeTab === 'map' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900">Regional Supplier Network</h3>
-                    <p className="text-xs text-slate-500">
-                      Click any pin to inspect delivery range, warehouse distance, and supplier details.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('catalog')}
-                    className="px-3.5 py-1.5 bg-sky-600 text-white text-xs font-semibold rounded-xl hover:bg-sky-700 cursor-pointer shadow-xs"
-                  >
-                    Browse Catalog
-                  </button>
-                </div>
 
-                <InteractiveMap
-                  suppliers={suppliers}
-                  selectedSupplierId={selectedSupplierId}
-                  onSelectSupplier={(id) => {
-                    setSelectedSupplierId(id);
-                    setActiveTab('catalog');
-                  }}
-                  buyerInstitution={currentInstitution}
-                />
-
-                {/* Quick Supplier Cards under map */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {suppliers.map((sup) => (
-                    <div
-                      key={sup.id}
-                      onClick={() => {
-                        setSelectedSupplierId(sup.id);
-                        setActiveTab('catalog');
-                      }}
-                      className="bg-white p-3.5 rounded-2xl border border-slate-200 hover:border-sky-300 shadow-xs cursor-pointer transition-all flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between text-[10px] font-bold uppercase text-sky-700">
-                          <span>{sup.category}</span>
-                          <span className="text-slate-400">Radius: {sup.deliveryRadiusKm}km</span>
-                        </div>
-                        <h4 className="font-bold text-slate-900 text-sm mt-1">{sup.name}</h4>
-                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{sup.address}</p>
-                      </div>
-
-                      <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                        <span>Lead: <strong>{sup.leadTimeDays}d</strong></span>
-                        <span className="text-sky-600 font-semibold">View Items →</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Tab: Orders */}
             {activeTab === 'orders' && (

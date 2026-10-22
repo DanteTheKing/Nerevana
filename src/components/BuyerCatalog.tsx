@@ -11,7 +11,7 @@ interface BuyerCatalogProps {
   onSelectSupplier: (id: string | null) => void;
   cartItems: CartItem[];
   onAddToCart: (product: Product, quantity: number) => void;
-  onOpenMap: () => void;
+  onOpenMap?: () => void;
 }
 
 const CATEGORIES = [

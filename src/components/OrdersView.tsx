@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { ProcurementOrder } from '../data/seedData';
 import { formatCurrency } from '../utils/procurement';
-import { Package, Clock, CheckCircle2, Truck, ChevronDown, ChevronUp, MapPin, Building2, Calendar } from 'lucide-react';
+import { Package, Clock, CheckCircle2, Truck, ChevronDown, ChevronUp, MapPin, Building2, Calendar, BarChart3 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+} from 'recharts';
 
 interface OrdersViewProps {
   orders: ProcurementOrder[];
@@ -21,6 +31,49 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
     if (filterStatus === 'all') return true;
     return o.status === filterStatus;
   });
+
+  // Prepare chart data: Monthly procurement spend by supplier category
+  // Since our orders have createdAt (e.g. '2026-10-21T...'), let's group by Month and Category
+  const categorySpendMap: { [monthCategory: string]: { month: string; category: string; spend: number } } = {};
+
+  orders.forEach((o) => {
+    const dateObj = new Date(o.createdAt || Date.now());
+    const monthName = dateObj.toLocaleString('default', { month: 'short', year: 'numeric' });
+    
+    // Determine category based on supplier name or default category
+    let category = 'General Supplies';
+    if (o.supplierName.includes('Elizabeth') || o.supplierName.includes('Evergreen')) {
+      category = 'Catering & Food';
+    } else if (o.supplierName.includes('Apex')) {
+      category = 'Stationery & Books';
+    } else if (o.supplierName.includes('Quantum')) {
+      category = 'STEM & Lab';
+    } else if (o.supplierName.includes('Titan')) {
+      category = 'Sports & Athletics';
+    }
+
+    const key = `${monthName}_${category}`;
+    if (!categorySpendMap[key]) {
+      categorySpendMap[key] = { month: monthName, category, spend: 0 };
+    }
+    categorySpendMap[key].spend += o.totalAmount;
+  });
+
+  // Reformat into recharts format: array of { month, [category]: spend }
+  const monthlyDataMap: { [month: string]: { month: string; [cat: string]: any } } = {};
+  const categoriesSet = new Set<string>();
+
+  Object.values(categorySpendMap).forEach((item) => {
+    categoriesSet.add(item.category);
+    if (!monthlyDataMap[item.month]) {
+      monthlyDataMap[item.month] = { month: item.month };
+    }
+    monthlyDataMap[item.month][item.category] = (monthlyDataMap[item.month][item.category] || 0) + item.spend;
+  });
+
+  const chartData = Object.values(monthlyDataMap);
+  const categories = Array.from(categoriesSet);
+  const colors = ['#0284c7', '#059669', '#d97706', '#7c3aed', '#db2777'];
 
   const getStatusBadge = (status: ProcurementOrder['status']) => {
     switch (status) {
@@ -75,7 +128,42 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Monthly Procurement Spend Chart */}
+      {!isSellerMode && chartData.length > 0 && (
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-sky-50 text-sky-600 rounded-xl">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-900 text-base">Monthly Procurement Spend by Category</h3>
+                <p className="text-xs text-slate-500">Visualizing expenditures across supplier categories over time.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full h-72 pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                <Tooltip
+                  formatter={(val: any) => formatCurrency(Number(val) || 0)}
+                  contentStyle={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                />
+                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
+                {categories.map((cat, idx) => (
+                  <Bar key={cat} dataKey={cat} fill={colors[idx % colors.length]} radius={[6, 6, 0, 0]} />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {['all', 'submitted', 'confirmed', 'in_transit', 'delivered'].map((st) => (
