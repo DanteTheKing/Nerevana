@@ -54,8 +54,22 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({
   const [tempRadius, setTempRadius] = useState(supplier.deliveryRadiusKm);
 
   // Supplier's products & orders
-  const supplierProducts = products.filter((p) => p.supplierId === supplier.id);
-  const supplierOrders = orders.filter((o) => o.supplierId === supplier.id);
+  const isElizabeth =
+    supplier.id === 'sup_elizabeth' ||
+    supplier.contactEmail === 'elizasaloon6@gmail.com' ||
+    supplier.name.toLowerCase().includes('elizabeth') ||
+    supplier.id.includes('elizabeth');
+
+  const supplierProducts = products.filter(
+    (p) =>
+      p.supplierId === supplier.id ||
+      (isElizabeth && (p.supplierId === 'sup_elizabeth' || p.supplierName.toLowerCase().includes('elizabeth')))
+  );
+  const supplierOrders = orders.filter(
+    (o) =>
+      o.supplierId === supplier.id ||
+      (isElizabeth && (o.supplierId === 'sup_elizabeth' || o.supplierName.toLowerCase().includes('elizabeth')))
+  );
 
   // 4 Successful (delivered) and 1 Unsuccessful (cancelled)
   const successfulOrders = supplierOrders.filter((o) => o.status === 'delivered');

@@ -47,10 +47,11 @@ export default function App() {
     autostart
       ? {
           uid: 'user_oakridge',
-          email: 'schen@oakridgeschools.org',
-          displayName: 'Sarah Chen (Oakridge High)',
-          role: 'buyer',
-          entityId: 'inst_oakridge',
+          uid: 'user_elizabeth',
+          email: 'elizasaloon6@gmail.com',
+          displayName: 'Elizabeth',
+          role: 'seller',
+          entityId: 'sup_elizabeth',
         }
       : null
   );
@@ -62,8 +63,8 @@ export default function App() {
   const [institutions, setInstitutions] = useState<Institution[]>(INITIAL_INSTITUTIONS);
 
   // Active buyer institution & seller supplier
-  const [currentInstitutionId, setCurrentInstitutionId] = useState<string>('inst_oakridge');
-  const [currentSupplierId, setCurrentSupplierId] = useState<string>('sup_apex');
+  const [currentInstitutionId, setCurrentInstitutionId] = useState<string>('inst_nyangori');
+  const [currentSupplierId, setCurrentSupplierId] = useState<string>('sup_elizabeth');
 
   // UI Navigation states
   const [activeTab, setActiveTab] = useState<'catalog' | 'orders'>('catalog');
@@ -171,10 +172,16 @@ export default function App() {
   const toggleRole = () => {
     if (!currentUser) return;
     const nextRole = currentUser.role === 'buyer' ? 'seller' : 'buyer';
+    if (nextRole === 'seller' && (currentUser.email === 'elizasaloon6@gmail.com' || currentUser.displayName.includes('Elizabeth'))) {
+      setCurrentSupplierId('sup_elizabeth');
+    }
+    if (nextRole === 'buyer' && (currentUser.email === 'procurement@nyangoriboys.ac.ke' || currentUser.email === 'elizasaloon6@gmail.com' || currentUser.displayName.includes('Nyang'))) {
+      setCurrentInstitutionId('inst_nyangori');
+    }
     setCurrentUser({
       ...currentUser,
       role: nextRole,
-      entityId: nextRole === 'buyer' ? currentInstitutionId : currentSupplierId,
+      entityId: nextRole === 'buyer' ? 'inst_nyangori' : 'sup_elizabeth',
     });
   };
 
@@ -192,47 +199,53 @@ export default function App() {
           });
 
           if (usr.role === 'buyer') {
-            if (usr.customEntityName) {
+            const existingInst = institutions.find((i) => i.id === usr.entityId || i.email === usr.email);
+            if (existingInst) {
+              setCurrentInstitutionId(existingInst.id);
+            } else if (usr.customEntityName) {
               const newInst: Institution = {
                 id: `inst_${usr.uid}`,
                 ownerId: usr.uid,
                 name: usr.customEntityName,
                 type: 'Public School',
-                address: usr.customAddress || '2150 Hayes St, San Francisco, CA',
-                lat: 37.7734,
-                lng: -122.4475,
+                address: usr.customAddress || 'Kisumu - Kakamega Highway, Kisumu, Kenya',
+                lat: -0.0917,
+                lng: 34.7680,
                 contactPerson: usr.displayName,
                 email: usr.email,
-                phone: '+1 (415) 322-9011',
-                studentCount: 950,
+                phone: '+254 722 890 120',
+                studentCount: 1450,
               };
               setInstitutions((prev) => [newInst, ...prev]);
               setCurrentInstitutionId(newInst.id);
             } else {
-              setCurrentInstitutionId(usr.entityId || 'inst_oakridge');
+              setCurrentInstitutionId('inst_nyangori');
             }
           } else {
-            if (usr.customEntityName) {
+            const existingSup = suppliers.find((s) => s.id === usr.entityId || s.contactEmail === usr.email);
+            if (existingSup) {
+              setCurrentSupplierId(existingSup.id);
+            } else if (usr.customEntityName) {
               const newSup: Supplier = {
                 id: `sup_${usr.uid}`,
                 ownerId: usr.uid,
                 name: usr.customEntityName,
-                category: usr.customCategory || 'Stationery & Books',
+                category: usr.customCategory || 'Fresh Garden Food',
                 description: 'Educational procurement supplies distributor.',
-                address: usr.customAddress || '450 Mission St, San Francisco, CA',
-                lat: 37.7901,
-                lng: -122.3995,
+                address: usr.customAddress || 'Kisumu Central Market - Farm Depot, Kisumu, Kenya',
+                lat: -0.1022,
+                lng: 34.7617,
                 deliveryRadiusKm: 35,
                 contactEmail: usr.email,
-                contactPhone: '+1 (415) 890-2100',
-                minOrderValue: 150,
+                contactPhone: '+254 712 345 678',
+                minOrderValue: 20,
                 rating: 5.0,
-                leadTimeDays: 2,
+                leadTimeDays: 1,
               };
               setSuppliers((prev) => [newSup, ...prev]);
               setCurrentSupplierId(newSup.id);
             } else {
-              setCurrentSupplierId(usr.entityId || 'sup_apex');
+              setCurrentSupplierId('sup_elizabeth');
             }
           }
         }}

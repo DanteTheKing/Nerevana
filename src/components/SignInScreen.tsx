@@ -79,13 +79,32 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSignInSuccess }) =
     setLoading(true);
     setErrorMsg(null);
     setTimeout(() => {
-      setTempUser({
-        uid: 'user_' + Math.random().toString(36).substring(2, 9),
-        email: effectiveEmail,
-        displayName: effectiveName || 'Account User',
-      });
       setLoading(false);
-      setStep('choose_role');
+
+      if (isNyangori) {
+        onSignInSuccess({
+          uid: 'user_nyangori',
+          email: 'procurement@nyangoriboys.ac.ke',
+          displayName: "Nyang'ori Boys High School",
+          role: 'buyer',
+          entityId: 'inst_nyangori',
+        });
+      } else if (isElizabeth) {
+        onSignInSuccess({
+          uid: 'user_elizabeth',
+          email: 'elizasaloon6@gmail.com',
+          displayName: 'Elizabeth',
+          role: 'seller',
+          entityId: 'sup_elizabeth',
+        });
+      } else {
+        setTempUser({
+          uid: 'user_' + Math.random().toString(36).substring(2, 9),
+          email: effectiveEmail,
+          displayName: effectiveName || 'Account User',
+        });
+        setStep('choose_role');
+      }
     }, 150);
   };
 
@@ -129,7 +148,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSignInSuccess }) =
         role: 'buyer',
         entityId: 'inst_nyangori',
         customEntityName: institutionName.trim() || "Nyang'ori Boys High School",
-        customAddress: organizationAddress.trim() || "Kisumu - Chavakali Highway, Nyang'ori, Vihiga",
+        customAddress: organizationAddress.trim() || "Kisumu - Kakamega Highway, Kisumu, Kenya",
       });
     } else {
       onSignInSuccess({
@@ -139,8 +158,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSignInSuccess }) =
         role: 'seller',
         entityId: 'sup_elizabeth',
         customEntityName: supplierName.trim() || 'Elizabeth',
-        customAddress: organizationAddress.trim() || "Vihiga - Kisumu Farm Route, Nyang'ori Zone",
-        customCategory: supplierCategory || 'Fresh Farm Produce',
+        customAddress: organizationAddress.trim() || "Kisumu Central Market - Farm Depot, Kisumu, Kenya",
+        customCategory: supplierCategory || 'Fresh Garden Food',
       });
     }
   };
