@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Commercial vendor providing educational goods and services.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "category": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 500 },
+        "address": { "type": "string", "maxLength": 200 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "deliveryRadiusKm": { "type": "number" },
+        "contactEmail": { "type": "string", "maxLength": 120 },
+        "contactPhone": { "type": "string", "maxLength": 50 },
+        "minOrderValue": { "type": "number" },
+        "rating": { "type": "number" },
+        "leadTimeDays": { "type": "number" }
+      },
+      "required": ["name", "category", "address", "lat", "lng", "contactEmail", "ownerId"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Catalog item offered by a supplier for institutional procurement.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "supplierId": { "type": "string", "maxLength": 128 },
+        "supplierName": { "type": "string", "maxLength": 120 },
+        "title": { "type": "string", "maxLength": 150 },
+        "category": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 600 },
+        "unitPrice": { "type": "number" },
+        "unit": { "type": "string", "maxLength": 50 },
+        "stock": { "type": "number" },
+        "moq": { "type": "number" },
+        "leadTimeDays": { "type": "number" },
+        "bulkDiscountPercent": { "type": "number" },
+        "bulkThreshold": { "type": "number" },
+        "inStock": { "type": "boolean" }
+      },
+      "required": ["supplierId", "title", "category", "unitPrice", "unit"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Procurement purchase order or quote request submitted by an educational institution.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "buyerId": { "type": "string", "maxLength": 128 },
+        "buyerName": { "type": "string", "maxLength": 120 },
+        "institutionType": { "type": "string", "maxLength": 80 },
+        "supplierId": { "type": "string", "maxLength": 128 },
+        "supplierName": { "type": "string", "maxLength": 120 },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "maxLength": 40 },
+        "deliveryAddress": { "type": "string", "maxLength": 200 },
+        "deliveryLat": { "type": "number" },
+        "deliveryLng": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 600 },
+        "itemCount": { "type": "number" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["buyerId", "buyerName", "supplierId", "totalAmount", "status"]
+    },
+    "Institution": {
+      "title": "Institution",
+      "description": "School, college, or district procurement profile.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "type": { "type": "string", "maxLength": 80 },
+        "address": { "type": "string", "maxLength": 200 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "contactPerson": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 50 }
+      },
+      "required": ["name", "type", "address", "lat", "lng", "ownerId"]
+    }
+  },
+  "firestore": {
+    "/suppliers/{supplierId}": {
+      "schema": "Supplier",
+      "description": "Directory of educational suppliers."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Procurement catalog items linked to suppliers."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Procurement orders between institutions and suppliers."
+    },
+    "/institutions/{institutionId}": {
+      "schema": "Institution",
+      "description": "Institutional buyer profiles."
+    }
+  }
+}

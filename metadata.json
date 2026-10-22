@@ -1,0 +1,6 @@
+{
+  "name": "EduSupply Connect",
+  "description": "Streamlined procurement marketplace connecting schools and educational institutions with local suppliers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
