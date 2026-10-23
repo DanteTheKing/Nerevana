@@ -30,6 +30,8 @@ import {
   Sparkles,
   Layers,
   Bot,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 export default function App() {
@@ -72,6 +74,27 @@ export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [firebaseReady, setFirebaseReady] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {
+      // Browser may block if not user gesture, ignore gracefully
+    }
+  };
 
   // Test Firebase connection on mount
   useEffect(() => {
@@ -104,6 +127,8 @@ export default function App() {
           quantity,
           bulkThreshold: product.bulkThreshold,
           bulkDiscountPercent: product.bulkDiscountPercent,
+          supplierId: product.supplierId,
+          supplierName: product.supplierName,
         },
       ];
     });
@@ -127,8 +152,12 @@ export default function App() {
     setCartItems([]);
   };
 
-  const handleCreateOrder = (newOrder: ProcurementOrder) => {
-    setOrders((prev) => [newOrder, ...prev]);
+  const handleCreateOrder = (newOrder: ProcurementOrder | ProcurementOrder[]) => {
+    if (Array.isArray(newOrder)) {
+      setOrders((prev) => [...newOrder, ...prev]);
+    } else {
+      setOrders((prev) => [newOrder, ...prev]);
+    }
   };
 
   // Seller operations
@@ -158,6 +187,19 @@ export default function App() {
         if (o.status === 'confirmed') return { ...o, status: 'in_transit' };
         if (o.status === 'in_transit') return { ...o, status: 'delivered' };
         return o;
+      })
+    );
+  };
+
+  const handleCancelOrder = (orderId: string, reason?: string) => {
+    setOrders((prev) =>
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        return {
+          ...o,
+          status: 'cancelled',
+          notes: reason ? `${o.notes ? o.notes + ' • ' : ''}Decline reason: ${reason}` : o.notes,
+        };
       })
     );
   };
@@ -350,6 +392,21 @@ export default function App() {
               <span className="hidden sm:inline">Switch to {currentUser.role === 'buyer' ? 'Seller' : 'Buyer'}</span>
             </button>
 
+            {/* Mobile-ready Fullscreen Toggle for Screen Recording */}
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="p-2 sm:px-2.5 sm:py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5"
+              title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen (ideal for mobile recording)'}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-3.5 h-3.5 text-sky-600" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5 text-slate-600" />
+              )}
+              <span className="hidden md:inline">{isFullscreen ? 'Exit' : 'Fullscreen'}</span>
+            </button>
+
             {/* Sign Out */}
             <button
               type="button"
@@ -423,6 +480,7 @@ export default function App() {
             onToggleStock={handleToggleStock}
             onDeleteProduct={handleDeleteProduct}
             onAdvanceOrderStatus={handleAdvanceOrderStatus}
+            onCancelOrder={handleCancelOrder}
             onUpdateDeliveryRadius={handleUpdateDeliveryRadius}
           />
         )}

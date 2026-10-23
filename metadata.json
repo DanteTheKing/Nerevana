@@ -1,6 +1,6 @@
 {
-  "name": "EduSupply Connect",
-  "description": "Streamlined procurement marketplace connecting schools and educational institutions with local suppliers.",
+  "name": "Nerevana",
+  "description": "Streamlined procurement marketplace connecting schools and educational institutions with local suppliers in Kenya.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

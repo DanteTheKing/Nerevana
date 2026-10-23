@@ -10,6 +10,8 @@ export interface CartItem {
   quantity: number;
   bulkThreshold?: number;
   bulkDiscountPercent?: number;
+  supplierId?: string;
+  supplierName?: string;
 }
 
 export interface PricingSummary {
