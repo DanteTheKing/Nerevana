@@ -17,6 +17,7 @@ import { BuyerCatalog } from './components/BuyerCatalog';
 import { CartModal } from './components/CartModal';
 import { OrdersView } from './components/OrdersView';
 import { SellerDashboard } from './components/SellerDashboard';
+import { PWAInstallButton } from './components/PWAInstallButton';
 import {
   School,
   Building2,
@@ -322,6 +323,7 @@ export default function App() {
 
           {/* Actions & Role Switcher */}
           <div className="flex items-center gap-2">
+            <PWAInstallButton />
             {currentUser.role === 'buyer' && (
               <button
                 type="button"
