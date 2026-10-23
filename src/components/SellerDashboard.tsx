@@ -134,22 +134,22 @@ export const SellerDashboard: React.FC<SellerDashboardProps> = ({
 
         {/* Quick Metrics Bar */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-          <div className="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-200 text-center">
-            <div className="text-[10px] font-bold uppercase text-emerald-700">Successful Sales</div>
-            <div className="text-base sm:text-lg font-black text-emerald-800">
-              {successfulOrders.length} <span className="text-xs font-semibold">(Green)</span>
-            </div>
-          </div>
-
-          <div className="bg-rose-50/70 p-3 rounded-2xl border border-rose-200 text-center">
-            <div className="text-[10px] font-bold uppercase text-rose-700">Unsuccessful</div>
-            <div className="text-base sm:text-lg font-black text-rose-800">
-              {unsuccessfulOrders.length} <span className="text-xs font-semibold">(Red)</span>
+          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+            <div className="text-[10px] font-bold uppercase text-slate-500">Successful Sales</div>
+            <div className="text-base sm:text-lg font-black text-slate-900">
+              {successfulOrders.length}
             </div>
           </div>
 
           <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
-            <div className="text-[10px] font-bold uppercase text-slate-500">Fulfilled Total</div>
+            <div className="text-[10px] font-bold uppercase text-slate-500">Unsuccessful Sales</div>
+            <div className="text-base sm:text-lg font-black text-slate-900">
+              {unsuccessfulOrders.length}
+            </div>
+          </div>
+
+          <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+            <div className="text-[10px] font-bold uppercase text-slate-500">Sells Totals</div>
             <div className="text-base sm:text-lg font-black text-slate-900">
               {formatCurrency(totalSuccessfulRevenue)}
             </div>
